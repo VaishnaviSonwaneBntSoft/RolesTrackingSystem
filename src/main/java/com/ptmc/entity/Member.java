@@ -2,6 +2,7 @@ package com.ptmc.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
@@ -17,7 +18,9 @@ public class Member {
 
     @Id
     @Generated(value = "Identity")
-    private Integer id;
+    private UUID memberId;
+
+    private String memberNumber;
 
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP" , name="timestmp" , insertable = false)
     private LocalDateTime timestamp;
@@ -37,4 +40,6 @@ public class Member {
     private boolean isExMember;
 
     private LocalDate dateOfJoining;
+
+    private boolean deleted=Boolean.FALSE;
 }
