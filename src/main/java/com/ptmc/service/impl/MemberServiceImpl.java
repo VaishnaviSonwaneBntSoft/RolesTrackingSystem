@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.ptmc.constant.MemberResponseMessage;
 import com.ptmc.entity.Member;
@@ -24,13 +23,25 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public Member createMember(Member member) {
-    
+        String workFlow = "MemberServiceImpl.createMember";
+        Member existingMember = memberRepository.findByMemberNumber(member.getMemberNumber());
+        if (existingMember != null) {
+            throw new MemberException(MemberResponseMessage.MEMBER_EXITS_ALREADY.getMessage(member.getMemberNumber()),
+                    HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, workFlow);
+        }
         return  memberRepository.save(member);
     }
 
 
     @Override
     public Member getMember(String memberNumber) {
+        String workFlow = "MemberServiceImpl.getMember";
+
+        Member existingMember = memberRepository.findByMemberNumber(memberNumber);
+        if (existingMember == null) {
+            throw new MemberException(MemberResponseMessage.MEMBER_NOT_FOUND.getMessage(memberNumber),
+                    HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, workFlow);
+        }
         return memberRepository.findByMemberNumber(memberNumber);
     }
 
@@ -66,7 +77,12 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public List<Member> getAllMembers() {
-        return memberRepository.findAll();
+        String workFlow = "MemberServiceImpl.getAllMembers()";
+        try{
+             return memberRepository.findAll();
+        }catch(MemberException exception){
+            throw new MemberException(MemberResponseMessage.FAILED_TO_FETCH_MEMBER_LIST.getMessage(), HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, workFlow);
+        }
     }
 
 }

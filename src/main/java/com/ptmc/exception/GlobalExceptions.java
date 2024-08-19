@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
+
 @ControllerAdvice
 public class GlobalExceptions {
 
@@ -46,5 +47,12 @@ public class GlobalExceptions {
     {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(WeekRolesException.class)
+    public ResponseEntity<ErrorResponse> handleWeekRolesException(WeekRolesException exception)
+    {
+        ErrorResponse errorResponse = new ErrorResponse(exception.getStatusCode() , exception.getStatus(), exception.getMessage());
+        return new ResponseEntity<>(errorResponse , exception.getStatus());
     }
 }
