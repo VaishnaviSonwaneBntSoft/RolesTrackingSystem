@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,10 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ptmc.constant.WeekRolesResponseMessage;
 import com.ptmc.entity.WeekRoles;
+import com.ptmc.response.WeekRoleResponse;
 import com.ptmc.service.WeekRolesService;
 
 @RestController
 @RequestMapping("/api/week-roles")
+@CrossOrigin(origins = "*")
 public class WeekRolesController {
 
     private static final Logger log = LoggerFactory.getLogger(WeekRolesController.class);
@@ -64,9 +67,10 @@ public class WeekRolesController {
     }
 
     @GetMapping
-    public ResponseEntity<List<WeekRoles>> getAllWeekRoles() {
+    public ResponseEntity<List<WeekRoleResponse>> getAllWeekRoles() {
         log.info("Request received for get list of WeekRoles");
-        List<WeekRoles> weekRolesList = weekRolesService.getAllWeekRoles();
-        return ResponseEntity.ok(weekRolesList);
+        List<WeekRoleResponse> weekRolesList = weekRolesService.getAllWeekRoles();
+        log.info("Data received {}",weekRolesList.getFirst().getRoleName());
+        return ResponseEntity.status(HttpStatus.OK.value()).body(weekRolesList);
     }
 }

@@ -1,6 +1,8 @@
 package com.ptmc.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -8,7 +10,9 @@ import org.springframework.stereotype.Service;
 import com.ptmc.constant.MemberResponseMessage;
 import com.ptmc.entity.Member;
 import com.ptmc.exception.MemberException;
+import com.ptmc.mapper.MemberMapper;
 import com.ptmc.repository.MemberRepository;
+import com.ptmc.response.MemberResponse;
 import com.ptmc.service.MemberService;
 
 @Service
@@ -24,6 +28,11 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public Member createMember(Member member) {
         String workFlow = "MemberServiceImpl.createMember";
+
+        member.setMemberId(UUID.randomUUID());
+        member.setMemberNumber(member.getFirstName()+member.getPhoneNumber());
+        member.setTimestamp(LocalDateTime.now());
+        
         Member existingMember = memberRepository.findByMemberNumber(member.getMemberNumber());
         if (existingMember != null) {
             throw new MemberException(MemberResponseMessage.MEMBER_EXITS_ALREADY.getMessage(member.getMemberNumber()),
@@ -76,10 +85,11 @@ public class MemberServiceImpl implements MemberService{
 
 
     @Override
-    public List<Member> getAllMembers() {
+    public List<MemberResponse> getAllMembers() {
         String workFlow = "MemberServiceImpl.getAllMembers()";
         try{
-             return memberRepository.findAll();
+            List<Member> member = memberRepository.findAll();
+             return MemberMapper.memberToMemberResponse(member);
         }catch(MemberException exception){
             throw new MemberException(MemberResponseMessage.FAILED_TO_FETCH_MEMBER_LIST.getMessage(), HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, workFlow);
         }

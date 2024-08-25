@@ -1,6 +1,8 @@
 package com.ptmc.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -8,7 +10,9 @@ import org.springframework.stereotype.Service;
 import com.ptmc.constant.WeekRolesResponseMessage;
 import com.ptmc.entity.WeekRoles;
 import com.ptmc.exception.WeekRolesException;
+import com.ptmc.mapper.WeekRoleMapper;
 import com.ptmc.repository.WeekRolesRepository;
+import com.ptmc.response.WeekRoleResponse;
 import com.ptmc.service.WeekRolesService;
 
 @Service
@@ -23,6 +27,10 @@ public class WeekRolesServiceImpl implements WeekRolesService {
     @Override
     public WeekRoles createWeekRoles(WeekRoles weekRoles) {
         String workFlow = "WeekRolesServiceImpl.createWeekRoles";
+
+        weekRoles.setWeekRolesId(UUID.randomUUID());
+        weekRoles.setTimestamp(LocalDateTime.now());
+
         WeekRoles existingWeekRoles = weekRolesRepository.findByTitle(weekRoles.getTitle());
         if (existingWeekRoles != null) {
             throw new WeekRolesException(WeekRolesResponseMessage.WEEK_ROLES_EXISTS_ALREADY.getMessage(weekRoles.getTitle()),
@@ -66,11 +74,12 @@ public class WeekRolesServiceImpl implements WeekRolesService {
     }
 
     @Override
-    public List<WeekRoles> getAllWeekRoles() {
+    public List<WeekRoleResponse> getAllWeekRoles() {
         String workFlow = "WeekRolesServiceImpl.getAllWeekRoles";
 
         try{
-            return weekRolesRepository.findAll();
+            List<WeekRoles> rolesList = weekRolesRepository.findAll();
+            return WeekRoleMapper.weekRolesToWeekRoleResponse(rolesList);
         }catch(WeekRolesException exception){
             throw new WeekRolesException(WeekRolesResponseMessage.WEEK_ROLES_FAILED_TO_FETCH.getMessage(), HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, workFlow);
         }

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Meeting</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .pair-container {
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .dropdown-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .dropdown {
+            width: 48%;
+            padding: 5px;
+        }
+
+        .button {
+            width: 30%;
+            padding: 10px;
+            background-color: #2e4cd4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #2840aa;
+        }
+
+        .pair-list {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .pair-item {
+            padding: 5px;
+            background-color: #e7e7e7;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .remove-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">Role Tracker</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="add-member.html">Members</a></li>
+                <li><a href="add-role.html">Roles</a></li>
+                <li><a href="#">Meetings</a></li>
+                <li><a href="#">Reports</a></li>
+                <li><a href="#">Settings</a></li>
+            </ul>
+        </nav>
+        <div class="profile">
+            <img src="images/profile.webp" alt="Profile">
+            <div class="dropdown">
+                <a href="Account.html">Account</a>
+                <a href="#">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2>Schedule Meeting</h2>
+        <form id="meetingForm">
+            <div class="form-group">
+                <label for="meetingDate">Meeting Date:</label>
+                <input type="date" class="form-control" id="meetingDate" name="meetingDate" required>
+            </div>
+            <div class="form-group">
+                <label for="meetingTime">Meeting Time:</label>
+                <input type="time" class="form-control" id="meetingTime" name="meetingTime" required>
+            </div>
+            <div class="form-group">
+                <label for="memberShipTitle">Membership Title:</label>
+                <select class="form-control" id="memberShipTitle" name="memberShipTitle" required>
+                    <option value="All">All</option>
+                    <option value="Specific">Specific</option>
+                </select>
+            </div>
+
+            <!-- Role-Member Pairing Section -->
+            <div class="pair-container">
+                <h3>Allocate Role to Member</h3>
+                <div class="dropdown-container">
+                    <select id="memberSelect" class="dropdown">
+                        <!-- Members will be loaded here -->
+                    </select>
+                    <select id="roleSelect" class="dropdown">
+                        <!-- Roles will be loaded here -->
+                    </select>
+                </div>
+                <button type="button" class="button" onclick="addPair()">Add Pair</button>
+                <div class="pair-list" id="pairList"></div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Schedule</button>
+        </form>
+        <hr>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Meeting ID</th>
+                    <th>Meeting Date</th>
+                    <th>Meeting Time</th>
+                    <th>Membership Title</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="meetingTableBody">
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Function to add a pair to the list
+        function addPair() {
+            const memberSelect = document.getElementById('memberSelect');
+            const roleSelect = document.getElementById('roleSelect');
+            const pairList = document.getElementById('pairList');
+
+            const selectedMemberId = memberSelect.value;
+            const selectedMemberName = memberSelect.options[memberSelect.selectedIndex].text;
+            const selectedRoleId = roleSelect.value;
+            const selectedRoleName = roleSelect.options[roleSelect.selectedIndex].text;
+
+            if (selectedMemberId && selectedRoleId) {
+                // Create a new pair item
+                const pairItem = document.createElement('div');
+                pairItem.className = 'pair-item';
+                pairItem.innerHTML = `${selectedMemberName} - ${selectedRoleName} <button class="remove-button" onclick="removePair(this)">Remove</button>`;
+                pairList.appendChild(pairItem);
+
+                // Reset the dropdowns after adding the pair
+                memberSelect.selectedIndex = 0;
+                roleSelect.selectedIndex = 0;
+            } else {
+                alert('Please select both a member and a role.');
+            }
+        }
+
+        // Function to remove a pair from the list
+        function removePair(button) {
+            const pairItem = button.parentElement;
+            pairItem.remove();
+        }
+
+        $(document).ready(function () {
+            // Function to fetch members from the API using fetch
+            function fetchMembers() {
+                fetch('http://localhost:8081/api/member', { method: 'GET' })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Transform data to include memberName
+                        const transformedData = data.map(member => ({
+                            name: `${member.firstName} ${member.lastName}` // Concatenate firstName and lastName
+                        }));
+                        populateDropdown('memberSelect', transformedData, 'name');
+                    })
+                    .catch(error => {
+                        console.error('Error fetching members:', error);
+                    });
+            }
+
+            // Function to fetch roles from the API using fetch
+            function fetchRoles() {
+                fetch('http://localhost:8081/api/week-roles', { method: 'GET' })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        const transformedData = data.map(role => ({
+                            roleName: role.roleName 
+                        }));
+                        populateDropdown('roleSelect', transformedData, 'roleName');
+                    })
+                    .catch(error => {
+                        console.error('Error fetching roles:', error);
+                    });
+            }
+
+            // Function to populate a dropdown with fetched data
+            function populateDropdown(selectId, data, textField) {
+                const selectElement = document.getElementById(selectId);
+                selectElement.innerHTML = '';
+
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.textContent = item[textField];
+                    selectElement.appendChild(option);
+                });
+            }
+
+            // Initialize dropdowns when the page loads
+            fetchRoles();
+            fetchMembers();
+        });
+
+    </script>
+</body>
+
+</html>

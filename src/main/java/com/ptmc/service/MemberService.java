@@ -3,6 +3,7 @@ package com.ptmc.service;
 import java.util.List;
 
 import com.ptmc.entity.Member;
+import com.ptmc.response.MemberResponse;
 
 public interface MemberService {
     Member createMember(Member member);
@@ -13,5 +14,5 @@ public interface MemberService {
 
     void deleteMember(String memberNumber);
 
-    List<Member> getAllMembers();
+    List<MemberResponse> getAllMembers();
 }

@@ -3,6 +3,7 @@ package com.ptmc.service;
 import java.util.List;
 
 import com.ptmc.entity.WeekRoles;
+import com.ptmc.response.WeekRoleResponse;
 
 public interface WeekRolesService {
 
@@ -14,6 +15,6 @@ public interface WeekRolesService {
 
     WeekRoles getWeekRoles(String title);
 
-    List<WeekRoles> getAllWeekRoles();
+    List<WeekRoleResponse> getAllWeekRoles();
 
 }

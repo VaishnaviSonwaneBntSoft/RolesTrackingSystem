@@ -16,8 +16,8 @@ import java.util.UUID;
 @Setter
 @Getter
 public class WeekRoles {
+    
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private UUID weekRolesId;
 
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP" , name="timestmp" , insertable = false)

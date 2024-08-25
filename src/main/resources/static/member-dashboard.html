@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .notification {
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
+
+        .button {
+            padding: 10px 20px;
+            margin: 5px;
+            background-color: #2e4cd4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #2840aa;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <!-- Add a similar navigation header as in your admin interface -->
+    </header>
+
+    <div class="container">
+        <h2>Member Dashboard</h2>
+        <div class="notification">
+            <p>Will you attend next Saturday's meeting?</p>
+            <button class="button" onclick="respondToMeeting('yes')">Yes</button>
+            <button class="button" onclick="respondToMeeting('no')">No</button>
+        </div>
+    </div>
+
+    <script>
+        function respondToMeeting(response) {
+            // Here, you'll send the response to the server
+            const memberResponse = {
+                memberId: 1, // This should be dynamically set to the logged-in member's ID
+                response: response
+            };
+
+            $.ajax({
+                url: 'api/meetingResponse', // Replace with your API endpoint
+                type: 'POST',
+                data: JSON.stringify(memberResponse),
+                contentType: 'application/json',
+                success: function (data) {
+                    alert('Your response has been recorded.');
+                    // Optionally, you could update the UI or provide further feedback
+                },
+                error: function (error) {
+                    console.error('Error sending response:', error);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Allocate Role to Member</title>
+    <style>
+        .container {
+            width: 300px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .dropdown {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 5px;
+        }
+        .button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .pair-list {
+            margin-top: 20px;
+        }
+        .pair-item {
+            padding: 5px;
+            background-color: #e7e7e7;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .remove-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h3>Allocate Role to Member</h3>
+    <select id="memberSelect" class="dropdown">
+        <!-- Members will be loaded here -->
+    </select>
+    <select id="roleSelect" class="dropdown">
+        <!-- Roles will be loaded here -->
+    </select>
+    <button class="button" onclick="addPair()">Add Pair</button>
+
+    <div class="pair-list" id="pairList">
+        <!-- Allocated pairs will be displayed here -->
+    </div>
+</div>
+
+<script>
+    // Dummy data to simulate fetching from the database
+    const members = [
+        { id: 1, name: 'John Doe' },
+        { id: 2, name: 'Jane Smith' }
+    ];
+
+    const roles = [
+        { id: 1, role_name: 'Admin' },
+        { id: 2, role_name: 'User' }
+    ];
+
+    // Function to populate dropdowns with members and roles
+    function populateDropdowns() {
+        const memberSelect = document.getElementById('memberSelect');
+        const roleSelect = document.getElementById('roleSelect');
+
+        members.forEach(member => {
+            const option = document.createElement('option');
+            option.value = member.id;
+            option.textContent = member.name;
+            memberSelect.appendChild(option);
+        });
+
+        roles.forEach(role => {
+            const option = document.createElement('option');
+            option.value = role.id;
+            option.textContent = role.role_name;
+            roleSelect.appendChild(option);
+        });
+    }
+
+    // Function to add a pair to the list
+    function addPair() {
+        const memberSelect = document.getElementById('memberSelect');
+        const roleSelect = document.getElementById('roleSelect');
+        const pairList = document.getElementById('pairList');
+
+        const selectedMemberId = memberSelect.value;
+        const selectedMemberName = memberSelect.options[memberSelect.selectedIndex].text;
+        const selectedRoleId = roleSelect.value;
+        const selectedRoleName = roleSelect.options[roleSelect.selectedIndex].text;
+
+        if (selectedMemberId && selectedRoleId) {
+            // Create a new pair item
+            const pairItem = document.createElement('div');
+            pairItem.className = 'pair-item';
+            pairItem.innerHTML = `${selectedMemberName} - ${selectedRoleName} <button class="remove-button" onclick="removePair(this)">Remove</button>`;
+            pairList.appendChild(pairItem);
+
+            // Reset the dropdowns after adding the pair
+            memberSelect.selectedIndex = 0;
+            roleSelect.selectedIndex = 0;
+        } else {
+            alert('Please select both a member and a role.');
+        }
+    }
+
+    // Function to remove a pair from the list
+    function removePair(button) {
+        const pairItem = button.parentElement;
+        pairItem.remove();
+    }
+
+    // Initialize the dropdowns when the page loads
+    window.onload = populateDropdowns;
+</script>
+
+</body>
+</html>

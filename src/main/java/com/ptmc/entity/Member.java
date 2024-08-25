@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -17,7 +16,6 @@ import lombok.Setter;
 public class Member {
 
     @Id
-    @Generated(value = "Identity")
     private UUID memberId;
 
     private String memberNumber;
@@ -40,6 +38,8 @@ public class Member {
     private boolean isExMember;
 
     private LocalDate dateOfJoining;
+
+    private String memberShipTitle;
 
     private boolean deleted=Boolean.FALSE;
 }
