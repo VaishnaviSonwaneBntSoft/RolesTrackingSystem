@@ -21,4 +21,6 @@ public interface MemberRepository extends JpaRepository<Member , UUID>{
     @Query("UPDATE Member m SET m.deleted = true WHERE m.memberNumber = :memberNumber")
     void softDeleteMember(@Param("memberNumber") String memberNumber);
 
+    Member findByFirstNameAndLastName(String firstName, String lastName);
+
 }

@@ -25,7 +25,6 @@ public class Meeting {
 
     private LocalDateTime meetingTime;
 
-    //select
     private String memberShipTitle;
 
     private boolean deleted = Boolean.FALSE;

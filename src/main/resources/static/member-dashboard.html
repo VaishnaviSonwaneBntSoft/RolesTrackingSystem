@@ -8,66 +8,87 @@
     <link rel="stylesheet" href="style.css">
     <style>
         .notification {
-            margin: 20px auto;
+            margin: 20px;
             padding: 20px;
             border: 1px solid #ccc;
             border-radius: 5px;
             background-color: #f9f9f9;
-            text-align: center;
         }
-
-        .button {
-            padding: 10px 20px;
+        .notification h3 {
+            margin: 0;
+        }
+        .response-button {
             margin: 5px;
-            background-color: #2e4cd4;
-            color: white;
+            padding: 10px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
         }
-
-        .button:hover {
-            background-color: #2840aa;
-        }
+        .available { background-color: #4CAF50; color: white; }
+        .tentative { background-color: #FFC107; color: black; }
+        .busy { background-color: #F44336; color: white; }
     </style>
 </head>
 
 <body>
     <header>
-        <!-- Add a similar navigation header as in your admin interface -->
+        <div class="logo">Role Tracker</div>
+        <!-- Include your navigation and profile sections -->
     </header>
 
     <div class="container">
-        <h2>Member Dashboard</h2>
-        <div class="notification">
-            <p>Will you attend next Saturday's meeting?</p>
-            <button class="button" onclick="respondToMeeting('yes')">Yes</button>
-            <button class="button" onclick="respondToMeeting('no')">No</button>
+        <div id="notification" class="notification">
+            <!-- Notification details will be inserted here -->
         </div>
     </div>
 
     <script>
-        function respondToMeeting(response) {
-            // Here, you'll send the response to the server
-            const memberResponse = {
-                memberId: 1, // This should be dynamically set to the logged-in member's ID
-                response: response
-            };
+       
+        const urlParts = window.location.pathname.split('/');
+        const memberNumber = urlParts[urlParts.length - 1];
 
-            $.ajax({
-                url: 'api/meetingResponse', // Replace with your API endpoint
-                type: 'POST',
-                data: JSON.stringify(memberResponse),
-                contentType: 'application/json',
-                success: function (data) {
-                    alert('Your response has been recorded.');
-                    // Optionally, you could update the UI or provide further feedback
+        function showNotification(meeting) {
+            const notificationDiv = document.getElementById('notification');
+            notificationDiv.innerHTML = `
+                <h3>Meeting Notification</h3>
+                <p>Meeting Number: ${meeting.meetingNumber}</p>
+                <p>Date: ${meeting.meetingDate}</p>
+                <p>Time: ${meeting.meetingTime}</p>
+                <button class="response-button available" onclick="sendResponse('available')">Available</button>
+                <button class="response-button tentative" onclick="sendResponse('tentative')">Tentative</button>
+                <button class="response-button busy" onclick="sendResponse('busy')">Busy</button>
+            `;
+        }
+
+        function sendResponse(response) {
+            fetch('http://localhost:8081/api/meeting-response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
                 },
-                error: function (error) {
-                    console.error('Error sending response:', error);
-                }
+                body: JSON.stringify({
+                    memberNumber: memberNumber,
+                    meetingNumber: meetingNumber,
+                    response: response
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Response recorded successfully');
+                
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error sending response');
             });
         }
+
+       
+        const meetingNumber = 123; 
+        fetch(`http://localhost:8081/api/meeting/${meetingNumber}`)
+            .then(response => response.json())
+            .then(data => showNotification(data))
+            .catch(error => console.error('Error fetching meeting details:', error));
     </script>
 </body>
 

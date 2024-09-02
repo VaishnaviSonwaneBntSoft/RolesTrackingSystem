@@ -12,6 +12,7 @@ import com.ptmc.entity.Member;
 import com.ptmc.exception.MemberException;
 import com.ptmc.mapper.MemberMapper;
 import com.ptmc.repository.MemberRepository;
+import com.ptmc.response.LoginResponse;
 import com.ptmc.response.MemberResponse;
 import com.ptmc.service.MemberService;
 
@@ -95,4 +96,22 @@ public class MemberServiceImpl implements MemberService{
         }
     }
 
+    @Override
+    public List<Member> getAllMembersList() {
+        String workFlow = "MemberServiceImpl.getAllMembers()";
+        try{
+            return memberRepository.findAll();
+        }catch(MemberException exception){
+            throw new MemberException(MemberResponseMessage.FAILED_TO_FETCH_MEMBER_LIST.getMessage(), HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, workFlow);
+        }
+    }
+
+
+    @Override
+    public boolean validateMember(String memberNumber) {
+       if(memberRepository.findByMemberNumber(memberNumber)!=null)
+            return true;
+        else 
+            return false;
+    }
 }

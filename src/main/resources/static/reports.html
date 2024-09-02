@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - Role Tracking System</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        .report-box {
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+
+        .report-box:hover,
+        .report-box:focus {
+            background-color: #f0f0f0;
+            outline: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .report-content {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">Role Tracker</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="add-member.html">Members</a></li>
+                <li><a href="add-role.html">Roles</a></li>
+                <li><a href="Meeting.html">Meetings</a></li>
+                <li><a href="reports.html">Reports</a></li>
+                <li><a href="#">Settings</a></li>
+            </ul>
+        </nav>
+        <div class="profile">
+            <img src="images/profile.webp" alt="Profile">
+            <div class="dropdown">
+                <a href="Account.html">Account</a>
+                <a href="#">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="reports">
+            <h1>Reports</h1>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <button class="report-box" aria-controls="report-content" aria-expanded="false"
+                            data-report="members">
+                            <h3>Members</h3>
+                            <p>View member details</p>
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="report-box" aria-controls="report-content" aria-expanded="false"
+                            data-report="meetings">
+                            <h3>Meetings</h3>
+                            <p>View meeting details</p>
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="report-box" aria-controls="report-content" aria-expanded="false"
+                            data-report="roles">
+                            <h3>Roles</h3>
+                            <p>View role details</p>
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="report-box" aria-controls="report-content" aria-expanded="false"
+                            data-report="allocate-roles">
+                            <h3>Allocate Roles</h3>
+                            <p>View role allocations</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="report-content" class="report-content hidden" role="region" aria-labelledby="report-heading">
+                <h2 id="report-heading">Report Details</h2>
+                <!-- Report data will be inserted here -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Role Tracking System</p>
+    </footer>
+
+    <script>
+        async function fetchReportData(endpoint) {
+            try {
+                const response = await fetch(endpoint);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return await response.json(); 
+            } catch (error) {
+                console.error('Error fetching report data:', error);
+                return [];
+            }
+        }
+
+        function createTable(headers, rows) {
+            let table = '<table class="table table-striped"><thead><tr>';
+            headers.forEach(header => {
+                table += `<th>${header}</th>`;
+            });
+            table += '</tr></thead><tbody>';
+            rows.forEach(row => {
+                table += '<tr>';
+                row.forEach(cell => {
+                    table += `<td>${cell}</td>`;
+                });
+                table += '</tr>';
+            });
+            table += '</tbody></table>';
+            return table;
+        }
+
+        function formatTimestamp(timestamp) {
+         
+            const date = new Date(timestamp);
+            const formattedDate = date.toLocaleDateString(); 
+            const formattedTime = date.toLocaleTimeString(); 
+            return { date: formattedDate, time: formattedTime };
+        }
+
+        async function showReport(type) {
+            const reportContent = document.getElementById('report-content');
+            let headers = [];
+            let rows = [];
+            let endpoint = '';
+
+            switch (type) {
+                case 'members':
+                    endpoint = 'http://localhost:8081/api/member/all';
+                    headers = ['Member Number', 'First Name', 'Last Name', 'Phone Number', 'Email Address', 'Occupation', 'Date of Birth', 'Date of Joining', 'Ex Member'];
+                    break;
+                case 'meetings':
+                    endpoint = 'http://localhost:8081/api/meeting';
+                    headers = ['Meeting Number', 'Meeting Date', 'Meeting Time'];
+                    break;
+                case 'roles':
+                    endpoint = 'http://localhost:8081/api/week-roles/all';
+                    headers = ['Title', 'Description', 'Inactive Count'];
+                    break;
+                case 'allocate-roles':
+                    endpoint = 'http://localhost:8081/api/allocate-role'; 
+                    headers = ['Allocation Number', 'Member Number', 'Role Name', 'Meeting Number', 'Date', 'Time'];
+                    break;
+                default:
+                    console.error('Unknown report type:', type);
+                    return;
+            }
+
+            const data = await fetchReportData(endpoint);
+
+            if (type === 'members') {
+                rows = data.map(member => [
+                    member.memberNumber,
+                    member.firstName,
+                    member.lastName,
+                    member.phoneNumber,
+                    member.emailAddress,
+                    member.occupation,
+                    member.dateOfBirth,
+                    member.dateOfJoining,
+                    member.isExMember ? 'Yes' : 'No'
+                ]);
+            } else if (type === 'meetings') {
+                rows = data.map(meeting => [
+                    meeting.meetingNumber,
+                    meeting.meetingDate,
+                    meeting.meetingTime
+                ]);
+            } else if (type === 'roles') {
+                rows = data.map(role => [
+                    role.title,
+                    role.description,
+                    role.inActiveCount
+                ]);
+            } else if (type === 'allocate-roles') {
+                rows = data.map(allocation => {
+                    const { date, time } = formatTimestamp(allocation.timestamp);
+                    return [
+                        allocation.allocationNumber,
+                        allocation.memberNumber,
+                        allocation.roleName,
+                        allocation.meetingNumber,
+                        date,
+                        time
+                    ];
+                });
+            }
+
+            reportContent.innerHTML = createTable(headers, rows);
+            reportContent.classList.remove('hidden');
+        }
+
+      
+        document.querySelectorAll('.report-box').forEach(button => {
+            button.addEventListener('click', handleButtonClick);
+            button.addEventListener('keydown', event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    handleButtonClick(event);
+                }
+            });
+        });
+
+        function handleButtonClick(event) {
+            const button = event.currentTarget;
+            const reportType = button.getAttribute('data-report');
+            const reportContent = document.getElementById('report-content');
+
+            // Set the aria-expanded attribute
+            button.setAttribute('aria-expanded', 'true');
+
+            showReport(reportType);
+        }
+    </script>
+</body>
+
+</html>

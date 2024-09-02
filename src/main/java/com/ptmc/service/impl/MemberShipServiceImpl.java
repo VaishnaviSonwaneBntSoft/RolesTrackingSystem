@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import com.ptmc.constant.MemberShipResponseMessage;
 import com.ptmc.entity.MemberShip;
 import com.ptmc.exception.MemberShipException;
+import com.ptmc.mapper.MemberShipMapper;
 import com.ptmc.repository.MemberShipRepository;
+import com.ptmc.response.MemberShipResponse;
 import com.ptmc.service.MemberShipService;
 
 @Service
@@ -73,10 +75,11 @@ public class MemberShipServiceImpl implements MemberShipService {
     }
 
     @Override
-    public List<MemberShip> getAllMemberShip() {
+    public List<MemberShipResponse> getAllMemberShip() {
         String workFlow = "MemberShipServiceImpl.getAllMemberShip";
         try {
-            return memberShipRepository.findAll();
+            List<MemberShip> responseMemberShips = memberShipRepository.findAll();
+            return MemberShipMapper.memberShipToMemberShipResponse(responseMemberShips);
         } catch (MemberShipException e) {
             throw new MemberShipException(MemberShipResponseMessage.FAILED_TO_RETRIEVE_MEMBERSHIP_LIST.getMessage(), HttpStatus.CONFLICT , HttpStatus.CONFLICT.value() , workFlow);
         }

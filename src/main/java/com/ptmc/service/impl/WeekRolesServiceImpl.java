@@ -84,4 +84,15 @@ public class WeekRolesServiceImpl implements WeekRolesService {
             throw new WeekRolesException(WeekRolesResponseMessage.WEEK_ROLES_FAILED_TO_FETCH.getMessage(), HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, workFlow);
         }
     }
+
+    @Override
+    public List<WeekRoles> getAllWeekRolesList() {
+        String workFlow = "WeekRolesServiceImpl.getAllWeekRoles";
+
+        try{
+            return weekRolesRepository.findAll();
+        }catch(WeekRolesException exception){
+            throw new WeekRolesException(WeekRolesResponseMessage.WEEK_ROLES_FAILED_TO_FETCH.getMessage(), HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, workFlow);
+        }
+    }
 }

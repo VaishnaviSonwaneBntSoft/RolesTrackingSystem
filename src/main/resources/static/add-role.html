@@ -1,12 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add New Role</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .pair-container {
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .dropdown-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .dropdown {
+            width: 48%;
+            padding: 5px;
+        }
+
+        .button {
+            width: 30%;
+            padding: 10px;
+            background-color: #2e4cd4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #2840aa;
+        }
+
+        .pair-list {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .pair-item {
+            padding: 5px;
+            background-color: #e7e7e7;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .remove-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
 </head>
+
 <body>
     <header>
         <div class="logo">Role Tracker</div>
@@ -15,8 +80,8 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="add-member.html">Members</a></li>
                 <li><a href="add-role.html">Roles</a></li>
-                <li><a href="#">Meetings</a></li>
-                <li><a href="#">Reports</a></li>
+                <li><a href="Meeting.html">Meetings</a></li>
+                <li><a href="reports.html">Reports</a></li>
                 <li><a href="#">Settings</a></li>
             </ul>
         </nav>
@@ -28,99 +93,227 @@
             </div>
         </div>
     </header>
-<div class="mx-3">
 
-    <section class="roles mt-4">
-        <h2>Manage Roles</h2>
-        
-        <!-- Role List -->
-        <div class="role-list">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Role Name</th>
-                        <th>Description</th>
-                        <th>Date</th>
-                        <th>Inactive Count</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Timer</td>
-                        <td>Note Time and manage with members</td>
-                        <td>2024-08-01</td>
-                        <td>2</td>
-                        <td>
-                            <button class="btn-secondary">Edit</button>
-                            <button class="btn-danger">Delete</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Speaker</td>
-                        <td>Speaks on random topic</td>
-                        <td>2024-08-01</td>
-                        <td>0</td>
-                        <td>
-                            <button class="btn-secondary">Edit</button>
-                            <button class="btn-danger">Delete</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+    <!-- Role-Member Pairing Section -->
+    <div class="pair-container">
+        <h3>Allocate Role to Member</h3>
+        <div class="form-group">
+            <label for="meetingNumber">Meeting Number:</label>
+            <input type="number" class="form-control" id="meetingNumber" name="meetingNumber" required>
         </div>
-    </section>
-
-    <div class="add-role mt-5">
-        <h3>Add New Role</h3>
-        <form id="addWeekRoleForm">
-            <label for="role-name">Role Name:</label>
-            <input type="text" id="role-name" name="title" required>
-            
-            <label for="role-description">Description:</label>
-            <textarea id="role-description" name="description" rows="4" required></textarea>
-            
-            <button type="submit" class="btn-primary">Add Role</button>
-        </form>
+        <div class="dropdown-container">
+            <select id="memberSelect" class="dropdown">
+                <!-- Members will be loaded here -->
+            </select>
+            <select id="roleSelect" class="dropdown">
+                <!-- Roles will be loaded here -->
+            </select>
+        </div>
+        <button type="button" class="button" onclick="addPair()">Add Pair</button>
+        <div class="pair-list" id="pairList"></div>
+        <button id="confirmButton" class="btn btn-primary" onclick="confirmAllocations()">Confirm Allocations</button>
     </div>
-</div>
 
-<script>
-    document.getElementById('addWeekRoleForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        const weekRole = {};
-        formData.forEach((value, key) => {
-            weekRole[key] = value || null;
-        });
-    
-        weekRole.inActiveCount = 0; 
-        weekRole.deleted = false;
-    
-        fetch('http://localhost:8081/api/week-roles', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(weekRole),
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+    <div class="mx-3">
+        <section class="roles mt-4">
+            <h2>Manage Roles</h2>
+
+            <!-- Role List -->
+            <div class="role-list">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Role Name</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Inactive Count</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Roles will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="add-role mt-5">
+            <h3>Add New Role</h3>
+            <form id="addWeekRoleForm">
+                <label for="role-name">Role Name:</label>
+                <input type="text" id="role-name" name="title" required>
+
+                <label for="role-description">Description:</label>
+                <textarea id="role-description" name="description" rows="4" required></textarea>
+
+                <button type="submit" class="btn-primary">Add Role</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get meeting number from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const meetingNumber = urlParams.get('meetingNumber');
+
+            if (meetingNumber) {
+                document.getElementById('meetingNumber').value = meetingNumber;
+
+                // Show popup
+                Swal.fire({
+                    title: 'Assign Roles',
+                    text: 'Would you like to assign roles for this meeting now?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, assign roles',
+                    cancelButtonText: 'No, I will do it later'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Scroll to the role assignment section
+                        document.querySelector('.pair-container').scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
             }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Success:', data);
-            alert('Week Role added successfully!');
-            this.reset(); 
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-            alert('Error adding Week Role. Please try again.');
+
+            function fetchMembers() {
+                fetch('http://localhost:8081/api/member', { method: 'GET' })
+                    .then(response => response.json())
+                    .then(data => {
+                        const transformedData = data.map(member => ({
+                            name: `${member.firstName} ${member.lastName}`,
+                            id: member.id
+                        }));
+                        populateDropdown('memberSelect', transformedData, 'name', 'id');
+                    })
+                    .catch(error => console.error('Error fetching members:', error));
+            }
+
+            function fetchRoles() {
+                fetch('http://localhost:8081/api/week-roles', { method: 'GET' })
+                    .then(response => response.json())
+                    .then(data => {
+                        const transformedData = data.map(role => ({
+                            roleName: role.roleName,
+                            id: role.id
+                        }));
+                        populateDropdown('roleSelect', transformedData, 'roleName', 'id');
+                    })
+                    .catch(error => console.error('Error fetching roles:', error));
+            }
+
+            function populateDropdown(selectId, data, textField, valueField) {
+                const selectElement = document.getElementById(selectId);
+                selectElement.innerHTML = '';
+
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.textContent = item[textField];
+                    option.value = item[valueField];
+                    selectElement.appendChild(option);
+                });
+            }
+
+            fetchRoles();
+            fetchMembers();
         });
-    });
-</script>
+
+        // Retrieve the counter from localStorage, or initialize it if it doesn't exist
+        let allocationCounter = parseInt(localStorage.getItem('allocationCounter'), 10) || 1;
+
+        function generateUniqueAllocationNumber() {
+            return Date.now() + allocationCounter++;
+        }
+
+        function saveAllocationCounter() {
+            localStorage.setItem('allocationCounter', allocationCounter);
+        }
+
+        function addPair() {
+            const memberSelect = document.getElementById('memberSelect');
+            const roleSelect = document.getElementById('roleSelect');
+            const pairList = document.getElementById('pairList');
+
+            const selectedMemberId = memberSelect.value;
+            const selectedMemberName = memberSelect.options[memberSelect.selectedIndex].text;
+            const selectedRoleId = roleSelect.value;
+            const selectedRoleName = roleSelect.options[roleSelect.selectedIndex].text;
+
+            if (selectedMemberId && selectedRoleId) {
+                // Generate a unique long allocation number
+                const allocationNumber = generateUniqueAllocationNumber();
+
+                // Create a new pair item
+                const pairItem = document.createElement('div');
+                pairItem.className = 'pair-item';
+                pairItem.innerHTML = `${selectedMemberName} - ${selectedRoleName} <button class="remove-button" onclick="removePair(this)">Remove</button>`;
+                pairItem.dataset.allocationNumber = allocationNumber;  // Assign the unique allocation number
+                pairList.appendChild(pairItem);
+
+                // Reset the dropdowns after adding the pair
+                memberSelect.selectedIndex = 0;
+                roleSelect.selectedIndex = 0;
+
+                // Save the updated counter to localStorage
+                saveAllocationCounter();
+            } else {
+                alert('Please select both a member and a role.');
+            }
+        }
+
+        function confirmAllocations() {
+            const meetingNumber = document.getElementById('meetingNumber').value;
+            const pairs = Array.from(document.querySelectorAll('.pair-item')).map(item => ({
+                allocationNumber: parseInt(item.dataset.allocationNumber, 10),  // Get the unique allocation number
+                memberName: item.textContent.split(' - ')[0],
+                roleName: item.textContent.split(' - ')[1].split('Remove')[0].trim(),
+                meetingNumber: parseInt(meetingNumber, 10)  // Ensure it's an integer
+            }));
+
+            if (pairs.length === 0) {
+                Swal.fire('Error', 'Please allocate at least one role before confirming.', 'error');
+                return;
+            }
+
+            console.log('Sending pairs:', pairs);  // Debugging line
+
+            fetch('http://localhost:8081/api/allocate-role/batch', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(pairs)  // Ensure the payload is correct
+            })
+                .then(response => {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        return response.json();
+                    } else {
+                        return response.text();  // Handle text response
+                    }
+                })
+                .then(data => {
+                    if (typeof data === 'string') {
+                        Swal.fire('Success', data, 'success');  // Display the text response
+                    } else {
+                        Swal.fire('Success', 'Roles allocated successfully!', 'success');
+                    }
+                    // Optionally reset the pair list
+                    // document.getElementById('pairList').innerHTML = '';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error', 'Failed to allocate roles. Please try again.', 'error');
+                });
+        }
+
+        // Load the counter value on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            // Ensure allocationCounter is loaded from localStorage
+            allocationCounter = parseInt(localStorage.getItem('allocationCounter'), 10) || 1;
+        });
+
+    </script>
 </body>
+
 </html>

@@ -15,4 +15,8 @@ public interface MemberService {
     void deleteMember(String memberNumber);
 
     List<MemberResponse> getAllMembers();
+
+    List<Member> getAllMembersList();
+
+    boolean validateMember(String memberNumber);
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ptmc.constant.MemberShipResponseMessage;
 import com.ptmc.entity.MemberShip;
+import com.ptmc.response.MemberShipResponse;
 import com.ptmc.service.MemberShipService;
 
 @RestController
@@ -66,10 +67,11 @@ public class MemberShipController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MemberShip>> getAllMemberShip()
+    public ResponseEntity<List<MemberShipResponse>> getAllMemberShip()
     {
         logger.info("Request received for get all membership Info");
-        List<MemberShip> memberShipList = memberShipService.getAllMemberShip();
-        return ResponseEntity.status(HttpStatus.FOUND.value()).body(memberShipList);
+        List<MemberShipResponse> memberShipList = memberShipService.getAllMemberShip();
+        logger.info("Data Fetched : {}",memberShipList.getFirst().getMemberShipTitle());
+        return ResponseEntity.status(HttpStatus.OK.value()).body(memberShipList);
     }
 }

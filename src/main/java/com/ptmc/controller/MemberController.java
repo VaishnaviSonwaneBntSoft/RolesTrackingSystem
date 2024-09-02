@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ptmc.constant.MemberResponseMessage;
 import com.ptmc.entity.Member;
+import com.ptmc.request.LoginRequest;
+import com.ptmc.response.LoginResponse;
 import com.ptmc.response.MemberResponse;
 import com.ptmc.service.MemberService;
 
@@ -34,6 +36,17 @@ public class MemberController {
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
+    }
+
+
+    @PostMapping("/login")
+    public ResponseEntity<? > login(@RequestBody LoginRequest loginRequest) {
+        boolean isValidMember = memberService.validateMember(loginRequest.getMemberNumber());
+        if (isValidMember) {
+            return ResponseEntity.ok(new LoginResponse(true));
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginResponse(false));
+        }
     }
 
     @PostMapping
@@ -73,6 +86,14 @@ public class MemberController {
     {
         log.info("Request received for get list of member");        
         List<MemberResponse> members = memberService.getAllMembers();
+        return ResponseEntity.status(HttpStatus.OK.value()).body(members);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Member>> getAllMembersList()
+    {
+        log.info("Request received for get list of member");        
+        List<Member> members = memberService.getAllMembersList();
         return ResponseEntity.status(HttpStatus.OK.value()).body(members);
     }
 

@@ -73,4 +73,12 @@ public class WeekRolesController {
         log.info("Data received {}",weekRolesList.getFirst().getRoleName());
         return ResponseEntity.status(HttpStatus.OK.value()).body(weekRolesList);
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<WeekRoles>> getAllWeekRolesList() {
+        log.info("Request received for get list of WeekRoles");
+        List<WeekRoles> weekRolesList = weekRolesService.getAllWeekRolesList();
+        log.info("Data received {}",weekRolesList.getFirst().getTitle());
+        return ResponseEntity.status(HttpStatus.OK.value()).body(weekRolesList);
+    }
 }

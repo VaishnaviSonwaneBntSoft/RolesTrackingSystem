@@ -17,4 +17,6 @@ public interface WeekRolesService {
 
     List<WeekRoleResponse> getAllWeekRoles();
 
+    List<WeekRoles> getAllWeekRolesList();
+
 }
