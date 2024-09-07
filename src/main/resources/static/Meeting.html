@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schedule Meeting</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style-home.css">
     <style>
         .pair-container {
             margin: 20px auto;
@@ -91,7 +92,7 @@
         </div>
     </header>
 
-    <div class="container">
+    <div class="container" style="margin-top:5em">
         <h2>Schedule Meeting</h2>
         <form id="meetingForm">
             <div class="form-group">
@@ -136,7 +137,6 @@
             const meetingDate = document.getElementById('meetingDate').value;
             const meetingTime = document.getElementById('meetingTime').value;
 
-            // Convert date and time to LocalDateTime
             const meetingDateTime = `${meetingDate}T${meetingTime}`;
 
             fetch('http://localhost:8081/api/meeting', {
@@ -150,24 +150,16 @@
                     meetingTime: meetingDateTime
                 })
             })
-                .then(response => response.json())
-                .then(data => {
-                    alert('Meeting scheduled successfully!');
-
-                    const targetWindow = window.open('', '_blank'); 
-                    targetWindow.postMessage({
-                        meetingNumber: meetingNumber,
-                        meetingDate: meetingDate,
-                        meetingTime: meetingTime
-                    }, 'http://127.0.0.1:5501/src/main/resources/static/member-dashboard.html'); 
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error scheduling meeting. Please try again.');
-                });
-
+            .then(response => response.json())
+            .then(data => {
+                alert('Meeting scheduled successfully!');
+                window.location.href = `add-role.html?meetingNumber=${meetingNumber}`;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error scheduling meeting. Please try again.');
+            });
         });
-
     </script>
 </body>
 
