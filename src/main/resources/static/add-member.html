@@ -12,11 +12,11 @@
 
     <style>
         body {
-            background-color: #f8f9fa; /* Light background for contrast */
+            background-color: #f8f9fa;
         }
 
         header {
-            background-color: #5f9cf5; /* Navbar color */
+            background-color: #5f9cf5;
         }
 
         .navbar, .btn-primary {
@@ -43,10 +43,10 @@
 
         /* Sidebar Styling */
         .sidebar {
-            margin-top:15px;
+            margin-top: 15px;
             width: 250px;
             height: 100vh;
-            border-radius:10px;
+            border-radius: 10px;
             background: linear-gradient(135deg, #6e45e2, #88d3ce);
             border-right: 1px solid #ddd;
             padding-top: 2rem;
@@ -64,18 +64,18 @@
             border-radius: 8px;
         }
 
-        .btn-add{
+        .btn-add {
             background: linear-gradient(135deg, #6e45e2, #88d3ce);
-            width:100%;
-            border:none;
-            padding:10px;
-            border-radius:10px;
-            color:white;
-            margin:0;
+            width: 100%;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            color: white;
+            margin: 0;
         }
 
         .sidebar .nav-link:hover {
-            background-color:#6e45e2;
+            background-color: #6e45e2;
             color: white;
             text-decoration: none;
         }
@@ -101,6 +101,11 @@
         /* Adjust the content positioning when sidebar is present */
         .d-flex {
             display: flex;
+        }
+
+        /* Hide sections initially */
+        #search-section, #add-member-section {
+            display: none;
         }
     </style>
 
@@ -134,16 +139,18 @@
     <div class="sidebar" id="sidebar">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link active" href="#">
+                <a class="nav-link active" href="#" onclick="showSection('search')">
                     <i class="fas fa-users"></i> Search Members
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <i class="fas fa-user-plus"></i>
-                    <button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#addMemberModal">
-                        Add New Member
-                    </button>
+                <a class="nav-link active" href="#" onclick="showSection('view alls')">
+                    <i class="fas fa-users"></i> View All Members
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" onclick="showSection('add')">
+                    <i class="fas fa-user-plus"></i> Add New Member
                 </a>
             </li>
             <li class="nav-item">
@@ -159,153 +166,141 @@
         </ul>
     </div>
 
-    <div class="container content" id="main-content">
-        <!-- Button to Open the Modal -->
+    <div class="container content">
+        <!-- Search Members Section -->
+        <div id="search-section">
+            <h2 class="text-center mb-4">Search Members</h2>
+            <div class="input-group mb-4">
+                <input type="text" class="form-control" id="searchMember"
+                       placeholder="Enter name, member number or mobile number">
+                <button class="btn btn-primary" onclick="searchMember()">Search</button>
+            </div>
 
-
-        <div class="row">
-            <div class="col-md-12">
-                <h2 class="text-center mb-4">Search Members</h2>
-                <div class="input-group mb-4">
-                    <input type="text" class="form-control" id="searchMember"
-                           placeholder="Enter name, member number or mobile number">
-                    <button class="btn btn-primary" onclick="searchMember()">Search</button>
-                </div>
-
-                <!-- Placeholder for search results -->
-                <div id="searchResults">
-                    <h3>Search Results</h3>
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>Member ID</th>
-                            <th>Name</th>
-                            <th>Phone</th>
-                            <th>Email</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody id="resultsBody">
-                        <!-- Results will be populated here -->
-                        </tbody>
-                    </table>
-                </div>
+            <div id="searchResults">
+                <h3>Search Results</h3>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Member ID</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="resultsBody">
+                    <!-- Results will be populated here -->
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- The Modal -->
-<div class="modal fade" id="addMemberModal" tabindex="-1" aria-labelledby="addMemberModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addMemberModalLabel">Add/Update Member</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Add/Update Member Form -->
-                <form id="addMemberForm">
-                    <!-- Form content goes here -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="firstName" class="form-label">First Name:</label>
-                            <input type="text" class="form-control" id="firstName" name="firstName" required
-                                   pattern="[A-Za-z]+" title="First name should only contain letters.">
-                            <div class="invalid-feedback">First name is required and should only contain letters.</div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="lastName" class="form-label">Last Name:</label>
-                            <input type="text" class="form-control" id="lastName" name="lastName" required
-                                   pattern="[A-Za-z]+" title="Last name should only contain letters.">
-                            <div class="invalid-feedback">Last name is required and should only contain letters.</div>
-                        </div>
+        <!-- Add New Member Section -->
+        <div id="add-member-section">
+            <h2 class="text-center mb-4">Add New Member</h2>
+            <form id="addMemberForm">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="firstName" class="form-label">First Name:</label>
+                        <input type="text" class="form-control" id="firstName" name="firstName" required>
                     </div>
+                    <div class="col-md-6">
+                        <label for="lastName" class="form-label">Last Name:</label>
+                        <input type="text" class="form-control" id="lastName" name="lastName" required>
+                    </div>
+                </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="phoneNumber" class="form-label">Phone Number:</label>
-                            <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" pattern="\d{10}"
-                                   title="Phone number should be exactly 10 digits." required>
-                            <div class="invalid-feedback">Phone number is required and should contain exactly 10
-                                digits.
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="emailAddress" class="form-label">Email Address:</label>
-                            <input type="email" class="form-control" id="emailAddress" name="emailAddress" required>
-                            <div class="invalid-feedback">Please enter a valid email address.</div>
-                        </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="phoneNumber" class="form-label">Phone Number:</label>
+                        <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" required>
                     </div>
+                    <div class="col-md-6">
+                        <label for="emailAddress" class="form-label">Email Address:</label>
+                        <input type="email" class="form-control" id="emailAddress" name="emailAddress" required>
+                    </div>
+                </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="occupation" class="form-label">Occupation:</label>
-                            <input type="text" class="form-control" id="occupation" name="occupation">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="dateOfBirth" class="form-label">Date of Birth:</label>
-                            <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" required>
-                            <div class="invalid-feedback">Member should be above 17 years of age. Please enter a valid
-                                birthdate.
-                            </div>
-                        </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="occupation" class="form-label">Occupation:</label>
+                        <input type="text" class="form-control" id="occupation" name="occupation">
                     </div>
+                    <div class="col-md-6">
+                        <label for="dateOfBirth" class="form-label">Date of Birth:</label>
+                        <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" required>
+                        <div class="invalid-feedback">Member should be above 17 years of age. Please enter a valid birthdate.</div>
+                    </div>
+                </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="dateOfJoining" class="form-label">Date of Joining:</label>
-                            <input type="date" class="form-control" id="dateOfJoining" name="dateOfJoining">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="membershipCycle" class="form-label">Membership Cycle:</label>
-                            <select class="form-select" id="membershipCycle" name="membershipCycle" required>
-                                <option value="" disabled selected>Select an option</option>
-                                <option value="Feb-July 2024">Feb-July 2024</option>
-                                <option value="Aug-Jan 2024">Aug-Jan 2024</option>
-                            </select>
-                            <div class="invalid-feedback">Please select a Membership Cycle.</div>
-                        </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="dateOfJoining" class="form-label">Date of Joining:</label>
+                        <input type="date" class="form-control" id="dateOfJoining" name="dateOfJoining">
                     </div>
+                    <div class="col-md-6">
+                        <label for="membershipCycle" class="form-label">Membership Cycle:</label>
+                        <select class="form-select" id="membershipCycle" name="membershipCycle" required>
+                            <option value="" disabled selected>Select an option</option>
+                            <option value="Feb-July 2024">Feb-July 2024</option>
+                            <option value="Aug-Jan 2024">Aug-Jan 2024</option>
+                        </select>
+                        <div class="invalid-feedback">Please select a Membership Cycle.</div>
+                    </div>
+                </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="isExMember" class="form-label">Is Ex-Member:</label>
-                            <select class="form-select" id="isExMember" name="isExMember" required>
-                                <option value="" disabled selected>Select an option</option>
-                                <option value="false">No</option>
-                                <option value="true">Yes</option>
-                            </select>
-                            <div class="invalid-feedback">Please select whether the member is an ex-member.</div>
-                        </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="isExMember" class="form-label">Is Ex-Member:</label>
+                        <select class="form-select" id="isExMember" name="isExMember" required>
+                            <option value="" disabled selected>Select an option</option>
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
+                        </select>
+                        <div class="invalid-feedback">Please select whether the member is an ex-member.</div>
                     </div>
+                </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <button type="submit" class="btn btn-primary w-100">Submit</button>
-                        </div>
+<!--                <div class="row mb-3">-->
+<!--                    <div class="col-md-6">-->
+<!--                        <button type="submit" class="btn btn-primary w-100">Submit</button>-->
+<!--                    </div>-->
+<!--                    <div class="col-md-3">-->
+<!--                        <button type="button" class="btn btn-danger w-100" onclick="deleteMember()">Delete</button>-->
+<!--                    </div>-->
+<!--                    <div class="col-md-3">-->
+<!--                        <button type="button" class="btn btn-warning w-100" onclick="updateMember()">Update</button>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-primary w-100">Submit</button>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    function showSection(section) {
+        document.getElementById('search-section').style.display = (section === 'search') ? 'block' : 'none';
+        document.getElementById('add-member-section').style.display = (section === 'add') ? 'block' : 'none';
+    }
+
     function searchMember() {
         const searchResults = document.getElementById('searchResults');
         const resultsBody = document.getElementById('resultsBody');
 
         const mockResults = [
             { id: 1, name: 'John Doe', phone: '1234567890', email: 'johndoe@example.com' },
-            { id: 2, name: 'Jane Smith', phone: '0987654321', email: 'janesmith@example.com' }
+            { id: 2, name: 'Jane Smith', phone: '0987654321', email: 'janesmith@example.com' },
         ];
 
-        resultsBody.innerHTML = '';
+        resultsBody.innerHTML = ''; // Clear previous results
+
         mockResults.forEach(result => {
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -313,13 +308,12 @@
                 <td>${result.name}</td>
                 <td>${result.phone}</td>
                 <td>${result.email}</td>
-                <td>
-                    <button class="btn btn-sm btn-primary">Edit</button>
-                    <button class="btn btn-sm btn-danger">Delete</button>
-                </td>
+                <td><button class="btn btn-sm btn-warning">Edit</button></td>
             `;
             resultsBody.appendChild(row);
         });
+
+        searchResults.style.display = 'block';
     }
 </script>
 </body>
