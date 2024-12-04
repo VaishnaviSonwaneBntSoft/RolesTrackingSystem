@@ -9,7 +9,7 @@ public interface WeekRolesService {
 
     WeekRoles createWeekRoles(WeekRoles weekRoles);
 
-    void updateWeekRoles(String title, WeekRoles weekRoles);
+    WeekRoles updateWeekRoles(String title, WeekRoles weekRoles);
 
     void deleteWeekRoles(String title);
 
@@ -19,4 +19,5 @@ public interface WeekRolesService {
 
     List<WeekRoles> getAllWeekRolesList();
 
+    Integer getCountOfRoles();
 }

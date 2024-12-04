@@ -3,6 +3,9 @@ package com.ptmc.service;
 import java.util.List;
 
 import com.ptmc.entity.MeetingResponse;
+import com.ptmc.entity.Member;
+import com.ptmc.response.MeetingResponseDTO;
+import com.ptmc.response.MemberResponse;
 
 public interface MeetingResponseService {
 
@@ -16,4 +19,9 @@ public interface MeetingResponseService {
 
     List<MeetingResponse> getAllMeetingResponses();
 
+    List<MemberResponse> getAllMembers(Long meetingNumber);
+
+    List<MeetingResponse> getAllMemberResponse(String memberNumber);
+
+    List<MeetingResponseDTO> getUpcomingMeetingsWithResponses();
 }

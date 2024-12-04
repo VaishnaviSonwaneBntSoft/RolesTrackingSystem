@@ -19,4 +19,6 @@ public interface WeekRolesRepository extends JpaRepository<WeekRoles , UUID>{
     @Query("UPDATE WeekRoles wr SET wr.deleted = true WHERE wr.title = :title")
     void deleteByTitle(String title);
 
+    @Query("SELECT COUNT(wr) FROM WeekRoles wr WHERE wr.deleted = false")
+    Integer getCountOfRoles();
 }

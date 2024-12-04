@@ -3,6 +3,7 @@ package com.ptmc.service;
 import java.util.List;
 
 import com.ptmc.entity.Member;
+import com.ptmc.request.SearchCriteria;
 import com.ptmc.response.MemberResponse;
 
 public interface MemberService {
@@ -19,4 +20,10 @@ public interface MemberService {
     List<Member> getAllMembersList();
 
     boolean validateMember(String memberNumber);
+
+    Member getMemberbySearchCriteria(SearchCriteria serachCriteria);
+
+    List<Member> getDeletedMembers();
+
+    Integer getCountOfMembers();
 }

@@ -16,4 +16,5 @@ public interface MeetingService {
 
     List<Meeting> getAllMeetings();
 
+    Integer getMeetingCount();
 }

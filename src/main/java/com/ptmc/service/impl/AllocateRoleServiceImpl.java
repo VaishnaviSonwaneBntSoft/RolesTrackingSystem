@@ -1,12 +1,16 @@
 package com.ptmc.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import com.ptmc.entity.Meeting;
+import com.ptmc.response.MemberResponse;
+import com.ptmc.response.WeekRoleResponse;
+import com.ptmc.service.MeetingResponseService;
+import com.ptmc.service.WeekRolesService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -20,23 +24,29 @@ import com.ptmc.request.AllocateRoleRequest;
 import com.ptmc.service.AllocateRoleService;
 
 
+@Slf4j
 @Service
 public class AllocateRoleServiceImpl implements AllocateRoleService {
 
     private final AllocateRoleRepository allocateRoleRepository;
     private final MemberRepository memberRepository;
+    private final MeetingResponseService meetingResponseService;
+    private final WeekRolesService weekRolesService;
 
-    public AllocateRoleServiceImpl(AllocateRoleRepository allocateRoleRepository, MemberRepository memberRepository) {
+    public AllocateRoleServiceImpl(AllocateRoleRepository allocateRoleRepository, MemberRepository memberRepository, MeetingResponseService meetingResponseService, WeekRolesService weekRolesService) {
         this.allocateRoleRepository = allocateRoleRepository;
         this.memberRepository = memberRepository;
+        this.meetingResponseService = meetingResponseService;
+        this.weekRolesService = weekRolesService;
     }
 
     @Override
     public AllocateRole createAllocateRole(AllocateRole allocateRole) {
         String workFlow = "AllocateRoleServiceImpl.createAllocateRole";
 
-        Long allocateNumber = allocateRoleRepository.getMaxAllocationNumber();
+        Long allocateNumber = allocateRoleRepository.getMaxAllocationNumber()+1;
         allocateRole.setAllocationNumber(allocateNumber);
+        allocateRole.setAllocateRoleId(UUID.randomUUID());
 
         AllocateRole existingAllocateRole = allocateRoleRepository.findByAllocationNumber(allocateNumber);
 
@@ -97,6 +107,17 @@ public class AllocateRoleServiceImpl implements AllocateRoleService {
     }
 
     @Override
+    public List<AllocateRole> getRoleMemberPairs(Long meetingNumber) {
+        return allocateRoleRepository.getPairs(meetingNumber);
+    }
+
+    @Override
+    public List<Meeting> getAllMeetings(String memberNumber) {
+        return allocateRoleRepository.findMeetings(memberNumber);
+    }
+
+
+    @Override
     public AllocateRole getAllocateRoleByNumber(Long allocationNumber) {
         String workFlow = "AllocateRoleServiceImpl.getAllocateRoleByNumber";
 
@@ -155,7 +176,8 @@ public class AllocateRoleServiceImpl implements AllocateRoleService {
         String workFlow = "AllocateRoleServiceImpl.getAllAllocateRoles";
 
         try {
-            return allocateRoleRepository.findAll();
+            Sort sort = Sort.by(Sort.Order.desc("meetingNumber"));
+            return allocateRoleRepository.findAll(sort);
         } catch (Exception e) {
             throw new AllocateRoleException(
                 AllocateRoleResponseMessage.FAILED_TO_FETCH_ALLOCATE_ROLE_LIST.getMessage(),
@@ -167,5 +189,75 @@ public class AllocateRoleServiceImpl implements AllocateRoleService {
     }
 
 
+    @Override
+    public List<AllocateRole> allocateRoles(Long meetingNumber, List<WeekRoleResponse> roles) {
+        List<AllocateRole> createdAllocations = new ArrayList<>();
+
+        List<MemberResponse> availableMembersResponse = fetchAvailableMembers(meetingNumber);
+        List<String> availableMembers = availableMembersResponse.stream()
+                .map(MemberResponse::getMemberNumber)
+                .collect(Collectors.toList());
+
+        List<String> allRoles = roles.stream()
+                .map(WeekRoleResponse::getRoleName)
+                .collect(Collectors.toList());
+
+        Map<String, Set<String>> memberRoleHistory = fetchMemberRoleHistory(availableMembers);
+
+        Map<String, Integer> memberRoleAllocationCount = new HashMap<>();
+        for (String member : availableMembers) {
+            memberRoleAllocationCount.put(member, 0);
+        }
+
+        for (String role : allRoles) {
+            String memberToAllocate = findMemberForRole(role, memberRoleHistory, availableMembers, memberRoleAllocationCount);
+
+            AllocateRole newAllocation = new AllocateRole();
+            newAllocation.setAllocateRoleId(UUID.randomUUID());
+            newAllocation.setTimestamp(LocalDateTime.now());
+            newAllocation.setDeleted(false);
+            newAllocation.setRoleName(role);
+            newAllocation.setAllocationNumber(allocateRoleRepository.getMaxAllocationNumber() + 1);
+            newAllocation.setMeetingNumber(meetingNumber);
+            newAllocation.setMemberNumber(memberToAllocate);
+
+            AllocateRole allocateRole = allocateRoleRepository.save(newAllocation);
+            createdAllocations.add(allocateRole);
+
+            memberRoleHistory.get(memberToAllocate).add(role);
+            memberRoleAllocationCount.put(memberToAllocate, memberRoleAllocationCount.get(memberToAllocate) + 1);
+        }
+
+        return createdAllocations;
+    }
+
+    @Override
+    public List<AllocateRole> getAllMemberAllocation(String memberNumber) {
+        return allocateRoleRepository.findByMemberNumber(memberNumber);
+    }
+
+    private String findMemberForRole(String role, Map<String, Set<String>> memberRoleHistory,
+                                     List<String> availableMembers, Map<String, Integer> memberRoleAllocationCount) {
+        return availableMembers.stream()
+                .filter(member -> !memberRoleHistory.get(member).contains(role))
+                .min(Comparator.comparingInt(memberRoleAllocationCount::get))
+                .orElseThrow(() -> new RuntimeException("No available member found for role: " + role));
+    }
+
+    private List<MemberResponse> fetchAvailableMembers(Long meetingNumber) {
+        return meetingResponseService.getAllMembers(meetingNumber);
+    }
+
+    private Map<String, Set<String>> fetchMemberRoleHistory(List<String> members) {
+        Map<String, Set<String>> memberRoleHistory = new HashMap<>();
+        for (String member : members) {
+            List<AllocateRole> lastFourAttendedMeetingsRoles = allocateRoleRepository.findLastFourAttendedMeetingsRolesByMemberNumber(member);
+            Set<String> roleHistory = lastFourAttendedMeetingsRoles.stream()
+                    .map(AllocateRole::getRoleName)
+                    .collect(Collectors.toSet());
+            memberRoleHistory.put(member, roleHistory);
+        }
+        return memberRoleHistory;
+    }
 
 }

@@ -2,6 +2,9 @@ package com.ptmc.controller;
 
 import java.util.List;
 
+import com.ptmc.entity.Member;
+import com.ptmc.response.MeetingResponseDTO;
+import com.ptmc.response.MemberResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -72,5 +75,28 @@ public class MeetingResponseController {
         logger.info("Request received for fetching all meeting responses");
         List<MeetingResponse> meetingResponsesList = meetingResponseService.getAllMeetingResponses();
         return ResponseEntity.status(HttpStatus.OK).body(meetingResponsesList);
+    }
+
+    @GetMapping("/{meeting-number}")
+    public ResponseEntity<List<MemberResponse>> getAllMembers(@PathVariable("meeting-number")Long meetingNumber)
+    {
+        logger.info("Request received for fetching all members from meeting response : {}" , meetingNumber);
+        List<MemberResponse> members = meetingResponseService.getAllMembers(meetingNumber);
+        return ResponseEntity.status(HttpStatus.OK).body(members);
+    }
+
+    @GetMapping("/member/{member-number}")
+    public ResponseEntity<List<MeetingResponse>> getAllMemberResponse(@PathVariable("member-number") String memberNumber)
+    {
+        logger.info("Request received for fetching member -response : {}",memberNumber);
+        List<MeetingResponse> meetingResponses = meetingResponseService.getAllMemberResponse(memberNumber);
+        return ResponseEntity.status(HttpStatus.OK).body(meetingResponses);
+    }
+
+    @GetMapping("/upcoming")
+    public ResponseEntity<List<MeetingResponseDTO>> getUpcomingMeetingsWithResponses() {
+        logger.info("Request received for get all info");
+        List<MeetingResponseDTO> meetings = meetingResponseService.getUpcomingMeetingsWithResponses();
+        return ResponseEntity.status(HttpStatus.OK).body(meetings);
     }
 }

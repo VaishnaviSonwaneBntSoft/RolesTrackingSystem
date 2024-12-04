@@ -53,10 +53,10 @@ public class WeekRolesController {
     }
 
     @PutMapping("/{title}")
-    public ResponseEntity<String> updateWeekRoles(@PathVariable("title") String title, @RequestBody WeekRoles weekRoles) {
+    public ResponseEntity<WeekRoles> updateWeekRoles(@PathVariable("title") String title, @RequestBody WeekRoles weekRoles) {
         log.info("Request received for update WeekRoles with Title: {}", title);
-        weekRolesService.updateWeekRoles(title, weekRoles);
-        return ResponseEntity.ok(WeekRolesResponseMessage.WEEK_ROLES_UPDATED_SUCCESSFULLY.getMessage(title));
+        WeekRoles updatedWeekRoles = weekRolesService.updateWeekRoles(title, weekRoles);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedWeekRoles);
     }
 
     @DeleteMapping("/{title}")
@@ -74,11 +74,19 @@ public class WeekRolesController {
         return ResponseEntity.status(HttpStatus.OK.value()).body(weekRolesList);
     }
 
+    
     @GetMapping("/all")
     public ResponseEntity<List<WeekRoles>> getAllWeekRolesList() {
         log.info("Request received for get list of WeekRoles");
         List<WeekRoles> weekRolesList = weekRolesService.getAllWeekRolesList();
         log.info("Data received {}",weekRolesList.getFirst().getTitle());
         return ResponseEntity.status(HttpStatus.OK.value()).body(weekRolesList);
+    }
+
+    @GetMapping("/count/{role-count}")
+    public ResponseEntity<Integer> getCountOfRoles()
+    {
+        Integer count = weekRolesService.getCountOfRoles();
+        return ResponseEntity.status(HttpStatus.OK).body(count);
     }
 }

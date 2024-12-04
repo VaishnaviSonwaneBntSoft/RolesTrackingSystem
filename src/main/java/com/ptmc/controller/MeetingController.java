@@ -61,4 +61,11 @@ public class MeetingController {
         List<Meeting> meetingsList = meetingService.getAllMeetings();
         return ResponseEntity.status(HttpStatus.OK).body(meetingsList);
     }
+
+    @GetMapping("/meeting-count")
+    public ResponseEntity<Integer> getMeetingCount()
+    {
+        Integer count = meetingService.getMeetingCount();
+        return ResponseEntity.status(HttpStatus.OK).body(count);
+    }
 }

@@ -3,6 +3,7 @@ package com.ptmc.controller;
 
 import java.util.List;
 
+import com.ptmc.request.SearchCriteria;
 import org.slf4j.Logger;
 
 import org.slf4j.LoggerFactory;
@@ -54,7 +55,7 @@ public class MemberController {
     {
         log.info("Request received for new member creation : {}",member);
         Member responseMember = memberService.createMember(member);
-        return ResponseEntity.status(HttpStatus.CREATED.value()).body(responseMember);
+        return ResponseEntity.status(HttpStatus.OK.value()).body(responseMember);
     }
 
     @GetMapping("/{member-number}")
@@ -62,8 +63,18 @@ public class MemberController {
     {
         log.info("Request received for get member details by member number : {}",memberNumber);
         Member responseMember = memberService.getMember(memberNumber);
-        return ResponseEntity.status(HttpStatus.FOUND.value()).body(responseMember);
-    }   
+        log.info("Response of member : {}",responseMember.getFirstName());
+        return ResponseEntity.status(HttpStatus.OK.value()).body(responseMember);
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<Member> getMemberBySearchCriteria(@RequestBody SearchCriteria serachCriteria)
+    {
+        log.info("Request received for get member details by member number : {}" , serachCriteria);
+        Member responseMember = memberService.getMemberbySearchCriteria(serachCriteria);
+        log.info("Fetch INFO : {}",responseMember.getFirstName());
+        return ResponseEntity.status(HttpStatus.OK.value()).body(responseMember);
+    }
 
     @PutMapping("/{member-number}")
     public ResponseEntity<String> updateMember(@PathVariable("member-number")String memberNumber , @RequestBody Member member)
@@ -95,6 +106,21 @@ public class MemberController {
         log.info("Request received for get list of member");        
         List<Member> members = memberService.getAllMembersList();
         return ResponseEntity.status(HttpStatus.OK.value()).body(members);
+    }
+
+    @GetMapping("/deleted-members")
+    public ResponseEntity<List<Member>> getDeletedMemberList()
+    {
+        log.info("Request received to fetch deleted members ");
+        List<Member> deletedMembers = memberService.getDeletedMembers();
+        return ResponseEntity.status(HttpStatus.OK.value()).body(deletedMembers);
+    }
+
+    @GetMapping("/member-count")
+    public ResponseEntity<Integer> getCountOfMembers()
+    {
+        Integer count = memberService.getCountOfMembers();
+        return ResponseEntity.status(HttpStatus.OK.value()).body(count);
     }
 
 

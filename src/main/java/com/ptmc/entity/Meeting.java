@@ -21,6 +21,8 @@ public class Meeting {
     
     private Long meetingNumber;
 
+    private String meetingTheme;
+
     private LocalDate meetingDate;
 
     private LocalDateTime meetingTime;

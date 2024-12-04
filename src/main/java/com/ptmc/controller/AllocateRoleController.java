@@ -2,20 +2,15 @@ package com.ptmc.controller;
 
 import java.util.List;
 
+import com.ptmc.entity.Meeting;
+import com.ptmc.response.MemberResponse;
+import com.ptmc.response.WeekRoleResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.ptmc.constant.AllocateRoleResponseMessage;
 import com.ptmc.entity.AllocateRole;
@@ -39,12 +34,12 @@ public class AllocateRoleController {
     public ResponseEntity<AllocateRole> createAllocateRole(@RequestBody AllocateRole allocateRole) {
         logger.info("Request received for creating allocation role with member name: {}", allocateRole.getMemberNumber());
         AllocateRole allocateRoleResponse = allocateRoleService.createAllocateRole(allocateRole);
-        return ResponseEntity.status(HttpStatus.CREATED).body(allocateRoleResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(allocateRoleResponse);
     }
 
     @PostMapping("/batch")
-    public ResponseEntity<String> createAllocateRoles(@RequestBody @Validated List<AllocateRoleRequest> allocateRoles) {
-        logger.info("Request received for creating allocation roles");
+    public ResponseEntity<String> createAllocateRoles(@RequestBody List<AllocateRoleRequest> allocateRoles) {
+        logger.info("Request received for creating allocation roles {} , {} " , allocateRoles.get(0).getMemberName() , allocateRoles.getFirst().getRoleName());
         allocateRoleService.createAllocateRoles(allocateRoles);
         return ResponseEntity.status(HttpStatus.CREATED).body(AllocateRoleResponseMessage.LIST_OF_ALLOCATE_ROLE_SAVED_SUCCESSFULLY.getMessage());
     }
@@ -76,5 +71,36 @@ public class AllocateRoleController {
         logger.info("Request received for fetching all allocation roles");
         List<AllocateRole> allocateRolesList = allocateRoleService.getAllAllocateRoles();
         return ResponseEntity.status(HttpStatus.OK).body(allocateRolesList);
+    }
+
+    @GetMapping("/pair/{meeting-number}")
+    public ResponseEntity<List<AllocateRole>> getRoleMemberPair(@PathVariable("meeting-number")Long meetingNumber)
+    {
+        logger.info("Request received for fetching all Member-Role pairs");
+        List<AllocateRole> pairs = allocateRoleService.getRoleMemberPairs(meetingNumber);
+        return ResponseEntity.status(HttpStatus.OK).body(pairs);
+    }
+
+    @GetMapping("/meeting/{member-number}")
+    public ResponseEntity<List<Meeting>> getUpcomingMeetings(@PathVariable("member-number") String memberNumber)
+    {
+        logger.info("Request received for fetching Meetings : {}" , memberNumber);
+        List<Meeting> meetings = allocateRoleService.getAllMeetings(memberNumber);
+        return ResponseEntity.status(HttpStatus.OK).body(meetings);
+    }
+
+    @GetMapping("/member/{member-number}")
+    public ResponseEntity<List<AllocateRole>> getAllMemberAllocation(@PathVariable("member-number") String memberNumber)
+    {
+        logger.info("Request receiev for memberAllocation : {}",memberNumber);
+        List<AllocateRole> members = allocateRoleService.getAllMemberAllocation(memberNumber);
+        return ResponseEntity.status(HttpStatus.OK).body(members);
+    }
+
+    @PostMapping("/automate/{meeting-number}")
+    public ResponseEntity<List<AllocateRole>> automateRoleAllocation(@PathVariable("meeting-number") Long meetingNumber , @RequestBody List<WeekRoleResponse> roles) {
+        logger.info("Recevied Roles for Automate Role Allocation: {}",roles.getFirst().getRoleName());
+        List<AllocateRole> allocateRoles = allocateRoleService.allocateRoles(meetingNumber , roles);
+        return ResponseEntity.status(HttpStatus.OK).body(allocateRoles);
     }
 }

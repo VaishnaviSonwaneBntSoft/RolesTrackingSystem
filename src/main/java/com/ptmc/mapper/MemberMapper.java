@@ -20,6 +20,7 @@ public class MemberMapper {
             MemberResponse response = new MemberResponse();
             response.setFirstName(member.get(i).getFirstName());
             response.setLastName(member.get(i).getLastName());
+            response.setMemberNumber(member.get(i).getMemberNumber());
             memberResponse.add(response);
         }
         return memberResponse;

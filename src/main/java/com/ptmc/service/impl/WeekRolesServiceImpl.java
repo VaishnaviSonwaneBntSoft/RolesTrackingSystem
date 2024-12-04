@@ -40,7 +40,7 @@ public class WeekRolesServiceImpl implements WeekRolesService {
     }
 
     @Override
-    public void updateWeekRoles(String title, WeekRoles weekRoles) {
+    public WeekRoles updateWeekRoles(String title, WeekRoles weekRoles) {
         String workFlow = "WeekRolesServiceImpl.updateWeekRoles";
         WeekRoles existingWeekRoles = weekRolesRepository.findByTitle(title);
         if (existingWeekRoles == null) {
@@ -48,7 +48,10 @@ public class WeekRolesServiceImpl implements WeekRolesService {
                     HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, workFlow);
         }
         weekRoles.setWeekRolesId(existingWeekRoles.getWeekRolesId());
-        weekRolesRepository.save(weekRoles);
+        weekRoles.setTimestamp(existingWeekRoles.getTimestamp());
+        weekRoles.setDeleted(existingWeekRoles.isDeleted());
+        weekRoles.setInActiveCount(existingWeekRoles.getInActiveCount());
+        return weekRolesRepository.save(weekRoles);
     }
 
     @Override
@@ -94,5 +97,10 @@ public class WeekRolesServiceImpl implements WeekRolesService {
         }catch(WeekRolesException exception){
             throw new WeekRolesException(WeekRolesResponseMessage.WEEK_ROLES_FAILED_TO_FETCH.getMessage(), HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, workFlow);
         }
+    }
+
+    @Override
+    public Integer getCountOfRoles() {
+        return weekRolesRepository.getCountOfRoles();
     }
 }

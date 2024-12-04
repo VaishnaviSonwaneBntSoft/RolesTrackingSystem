@@ -9,16 +9,12 @@ import lombok.Setter;
 @Getter
 public class AllocateRoleRequest {
 
-    @NonNull
     private Long allocationNumber;
 
-    @NonNull
     private String memberName;
 
-    @NonNull
     private String roleName;
 
-    @NonNull
     private Long meetingNumber;
 
 }

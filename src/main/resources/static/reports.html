@@ -5,33 +5,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reports - Role Tracking System</title>
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="style-home.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .report-box {
-            cursor: pointer;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 10px;
-            text-align: center;
+        header {
+            padding: 30px;
+            border-radius: 10px;
+            height: 10px;
+            width: 100%;
+            font-size: 20px;
+            background: linear-gradient(135deg, #6e45e2, #88d3ce);
+        }
+
+        header .logo {
+            font-size: 30px;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7f9;
+        }
+
+        .sidebar {
+            background: linear-gradient(135deg, #6e45e2, #88d3ce);
+            border-radius: 10px;
+            margin-top: 0;
+            color: #ecf0f1;
+            height: 150vh;
+            padding-top: 20px;
+        }
+
+        .sidebar h3 {
+            color: #3498db;
+            margin-bottom: 20px;
+        }
+
+        .sidebar .nav-link {
+            color: #ecf0f1;
+            border-radius: 0;
             transition: background-color 0.3s;
         }
 
-        .report-box:hover,
-        .report-box:focus {
-            background-color: #f0f0f0;
-            outline: none;
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: #34495e;
         }
 
-        .hidden {
-            display: none;
+        .main-content {
+            padding: 20px;
         }
 
-        .report-content {
-            margin-top: 20px;
+        .card-I {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            padding: 0;
+            width: 1000px;
+            margin-left: 10px;
+            padding: 20px;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #6e45e2, #88d3ce);
+            color: white;
+            padding: 0;
+            padding: 5px;
+            margin: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6e45e2, #88d3ce);
+            border-color: #3498db;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
         }
     </style>
 </head>
@@ -57,53 +108,100 @@
             </div>
         </div>
     </header>
-
-    <main>
-        <section class="reports" style="margin-top:5em">
-            <h1>Reports</h1>
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-4">
-                        <button class="report-box" aria-controls="report-content" aria-expanded="false"
-                            data-report="members">
-                            <h3>Members</h3>
-                            <p>View member details</p>
-                        </button>
-                    </div>
-                    <div class="col-md-4">
-                        <button class="report-box" aria-controls="report-content" aria-expanded="false"
-                            data-report="meetings">
-                            <h3>Meetings</h3>
-                            <p>View meeting details</p>
-                        </button>
-                    </div>
-                    <div class="col-md-4">
-                        <button class="report-box" aria-controls="report-content" aria-expanded="false"
-                            data-report="roles">
-                            <h3>Roles</h3>
-                            <p>View role details</p>
-                        </button>
-                    </div>
-                    <div class="col-md-4">
-                        <button class="report-box" aria-controls="report-content" aria-expanded="false"
-                            data-report="allocate-roles">
-                            <h3>Allocate Roles</h3>
-                            <p>View role allocations</p>
-                        </button>
-                    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#reports">
+                                Reports
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#member-responses">
+                                Member Responses
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#member-allocations">
+                                Member Allocations
+                            </a>
+                        </li>
+                    </ul>
                 </div>
-            </div>
-            <div id="report-content" class="report-content hidden" role="region" aria-labelledby="report-heading">
-                <h2 id="report-heading">Report Details</h2>
-                <!-- Report data will be inserted here -->
-            </div>
-        </section>
-    </main>
+            </nav>
 
-    <footer>
-        <p>&copy; 2024 Role Tracking System</p>
-    </footer>
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <h1 class="mb-4" style="text-align: center;">Reports Dashboard</h1>
 
+                <!-- Reports Section -->
+                <section id="reports">
+                    <div class="card-I">
+                        <div class="card-header" style="border-radius: 10px; text-align: center;">
+                            <h4>Reports</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <button class="btn btn-primary w-100" data-report="members">Members</button>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <button class="btn btn-primary w-100" data-report="meetings">Meetings</button>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <button class="btn btn-primary w-100" data-report="roles">Roles</button>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <button class="btn btn-primary w-100" data-report="allocate-roles">Allocate
+                                        Roles</button>
+                                </div>
+                            </div>
+                            <div id="report-content" class="mt-4"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Member Responses Section -->
+                <section id="member-responses">
+                    <div class="card-I">
+                        <div class="card-header" style="border-radius: 10px; text-align: center;">
+                            <h4>Member Responses</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="input-group mb-3">
+                                <input type="text" id="member-response-search" class="form-control"
+                                    placeholder="Search by name, member number, or phone number">
+                                <button class="btn btn-primary" onclick="searchMemberResponses()">Search</button>
+                            </div>
+                            <div id="member-response-results"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Member Allocations Section -->
+                <section id="member-allocations">
+                    <div class="card-I">
+                        <div class="card-header" style="border-radius: 10px; text-align: center;">
+                            <h4>Member Allocations</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="input-group mb-3">
+                                <input type="text" id="member-allocation-search" class="form-control"
+                                    placeholder="Search by name, member number, or phone number">
+                                <button class="btn btn-primary" onclick="searchMemberAllocations()">Search</button>
+                            </div>
+                            <div id="member-allocation-results"></div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         async function fetchReportData(endpoint) {
             try {
@@ -111,7 +209,7 @@
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                return await response.json(); 
+                return await response.json();
             } catch (error) {
                 console.error('Error fetching report data:', error);
                 return [];
@@ -136,10 +234,9 @@
         }
 
         function formatTimestamp(timestamp) {
-         
             const date = new Date(timestamp);
-            const formattedDate = date.toLocaleDateString(); 
-            const formattedTime = date.toLocaleTimeString(); 
+            const formattedDate = date.toLocaleDateString();
+            const formattedTime = date.toLocaleTimeString();
             return { date: formattedDate, time: formattedTime };
         }
 
@@ -160,10 +257,10 @@
                     break;
                 case 'roles':
                     endpoint = 'http://localhost:8081/api/week-roles/all';
-                    headers = ['Title', 'Description', 'Inactive Count'];
+                    headers = ['Title', 'Description'];
                     break;
                 case 'allocate-roles':
-                    endpoint = 'http://localhost:8081/api/allocate-role'; 
+                    endpoint = 'http://localhost:8081/api/allocate-role';
                     headers = ['Allocation Number', 'Member Number', 'Role Name', 'Meeting Number', 'Date', 'Time'];
                     break;
                 default:
@@ -189,17 +286,24 @@
                 rows = data.map(meeting => [
                     meeting.meetingNumber,
                     meeting.meetingDate,
-                    meeting.meetingTime
+                    new Date('1970-01-01T' + meeting.meetingTime.split('T')[1]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })
                 ]);
-            } else if (type === 'roles') {
+            }
+            else if (type === 'roles') {
                 rows = data.map(role => [
                     role.title,
                     role.description,
-                    role.inActiveCount
                 ]);
             } else if (type === 'allocate-roles') {
                 rows = data.map(allocation => {
-                    const { date, time } = formatTimestamp(allocation.timestamp);
+                    const timestamp = new Date(allocation.timestamp);
+                    const date = timestamp.toISOString().split('T')[0];
+                    const time = timestamp.toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true
+                    });
+
                     return [
                         allocation.allocationNumber,
                         allocation.memberNumber,
@@ -211,30 +315,55 @@
                 });
             }
 
+
             reportContent.innerHTML = createTable(headers, rows);
-            reportContent.classList.remove('hidden');
         }
 
-      
-        document.querySelectorAll('.report-box').forEach(button => {
-            button.addEventListener('click', handleButtonClick);
-            button.addEventListener('keydown', event => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    handleButtonClick(event);
-                }
+        async function searchMemberAllocations() {
+            const searchTerm = document.getElementById('member-allocation-search').value;
+            const endpoint = `http://localhost:8081/api/allocate-role/member/${searchTerm}`;
+            const data = await fetchReportData(endpoint);
+
+            const headers = ['Member Number', 'Role Name', 'Meeting Number'];
+            const rows = data.map(allocation => {
+                const { date, time } = formatTimestamp(allocation.timestamp);
+                return [
+                    allocation.memberNumber,
+                    allocation.roleName,
+                    allocation.meetingNumber,
+                ];
+            });
+
+            document.getElementById('member-allocation-results').innerHTML = createTable(headers, rows);
+        }
+
+        async function searchMemberResponses() {
+            const searchTerm = document.getElementById('member-response-search').value;
+            const endpoint = `http://localhost:8081/api/meeting-response/member/${searchTerm}`;
+            const data = await fetchReportData(endpoint);
+
+            const headers = ['Member Number', 'Meeting Number', 'Response', 'Reason', 'Time&Date'];
+            const rows = data.map(response => {
+                const { date, time } = formatTimestamp(response.timestamp);
+                return [
+                    response.memberNumber,
+                    response.meetingNumber,
+                    response.response,
+                    response.reason,
+                    response.timestmp
+                ];
+            });
+
+            document.getElementById('member-response-results').innerHTML = createTable(headers, rows);
+        }
+
+        // Event listeners for report buttons
+        document.querySelectorAll('[data-report]').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const reportType = event.target.getAttribute('data-report');
+                showReport(reportType);
             });
         });
-
-        function handleButtonClick(event) {
-            const button = event.currentTarget;
-            const reportType = button.getAttribute('data-report');
-            const reportContent = document.getElementById('report-content');
-
-            // Set the aria-expanded attribute
-            button.setAttribute('aria-expanded', 'true');
-
-            showReport(reportType);
-        }
     </script>
 </body>
 

@@ -22,5 +22,7 @@ public class MeetingResponse {
 
     private String response;
 
+    private String reason;
+
     private LocalDateTime timestmp;
 }
